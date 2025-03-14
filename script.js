@@ -1,8 +1,13 @@
 const btn = document.querySelector('.create')
 const container = document.querySelector('.container')
-const noteInput = document.querySelector('.note-input')
 
-btn.addEventListener('click',()=>{
+function loadNotes(){
+    const savedNotes = JSON.parse(localStorage.getItem('notes')) || [];
+    savedNotes.forEach(text => createNote(text));
+}
+
+function createNote(text = ''){
+
     const noteBox = document.createElement('div')
     noteBox.className= 'note-box'
     container.appendChild(noteBox)
@@ -10,18 +15,27 @@ btn.addEventListener('click',()=>{
     noteBox.innerHTML = `<textarea rows='4' cols='50' placeholder='Enter a note' class='note-input'></textarea>
                          <button class='delete' ><img src='./images/delete.png' /></button>`
 
+    const textarea = noteBox.querySelector('.note-input')
+    textarea.value = text
+    textarea.addEventListener('input',()=>{
+        updateStorage();
+    })
+
     const del = noteBox.querySelector('.delete')
-    del.addEventListener('click',(e)=>{
+    del.addEventListener('click',()=>{
             noteBox.remove()            
             updateStorage() ;
      })
-
-     localStorage.setItem('name','noteBox')
-})
+}
 
 function updateStorage(){
-    localStorage.setItem('notes',noteInput.innerHTML);
+    const notes = Array.from(document.querySelectorAll('.note-input')).map(nt => nt.value)
+    localStorage.setItem('notes',JSON.stringify(notes))
 }
+
+btn.addEventListener('click',() => createNote())
+
+loadNotes();
 
 
 
